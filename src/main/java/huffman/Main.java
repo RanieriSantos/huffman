@@ -2,6 +2,6 @@ package huffman;
 
 public class Main {
         public static void main(String[] args) {
-                System.out.println("Hello Huffman");
+                Compress toupeira = new Compress("doc/remexo.txt");
         }
 }
