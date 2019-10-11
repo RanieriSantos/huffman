@@ -10,7 +10,7 @@ public class Compress {
                 this.reader = new InputFile(input);
                 map = new HashMap<Character, Integer>();
                 map = reader.counter();
-                System.out.println(map.values());
+                reader.HashMapPrint();
         }
 
 }

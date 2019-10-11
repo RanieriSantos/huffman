@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class InputFile {
@@ -41,6 +42,12 @@ public class InputFile {
                         e.printStackTrace();
                 }
                 return this.map_char;
+        }
+
+        protected void HashMapPrint() {
+                this.map_char.entrySet().forEach(entry -> {
+                        System.out.println("[ " + entry.getKey() + " | " + entry.getValue() + "\t]");
+                });
         }
 
 }
