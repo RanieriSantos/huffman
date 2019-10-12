@@ -32,4 +32,8 @@ public class Compress {
                                         "[ " + entry.getKey() + " | " + entry.getValue() + "\t]");
                 });
         }
+
+        public HashMap<Character, Integer> getMap() {
+                return map;
+        }
 }

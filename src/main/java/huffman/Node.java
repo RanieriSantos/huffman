@@ -1,58 +1,109 @@
 package huffman;
 
-public class Node<T> {
-	private T value; // Data of the node.
-	private Node<T> left; // Left child node.
-	private Node<T> right; // Right child node.
-	private Node<T> parent; // Parent node.
+/**
+ * The {@code Node} class implements the node to compose the Binary Tree.
+ * 
+ * @author imns1ght
+ */
+public class Node {
+	private int letter; // Char of the node.
+	private int amount; // Amount of chars.
+	private Node left; // Left child node.
+	private Node right; // Right child node.
+	private Node parent; // Parent node.
 
+	/**
+	 * Default constructor.
+	 */
 	public Node() {
-		this.value = null;
+		this.letter = 0;
+		this.amount = 1;
 		this.left = null;
 		this.right = null;
 		this.parent = null;
 	}
 
-	public Node(T value) {
-		this.value = value;
+	/**
+	 * Constructor with param.
+	 * 
+	 * @param letter char of the node.
+	 * @param count  amount of chars.
+	 */
+	public Node(int letter) {
+		this.letter = letter;
+		this.amount = 1;
 		this.left = null;
 		this.right = null;
 		this.parent = null;
 	}
 
-	public T getValue() {
-		return value;
+	/**
+	 * Constructor with param.
+	 * 
+	 * @param letter char of the node.
+	 * @param count  amount of chars.
+	 */
+	public Node(int letter, int count) {
+		this.letter = letter;
+		this.amount = count;
+		this.left = null;
+		this.right = null;
+		this.parent = null;
 	}
 
-	public void setValue(T value) {
-		this.value = value;
+	/////////////////////////////////////////////
+	// Gets/Sets
+	/////////////////////////////////////////////
+
+	public int getLetter() {
+		return letter;
 	}
 
-	public Node<T> getLeft() {
+	public void setLetter(int letter) {
+		this.letter = letter;
+	}
+
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+
+	public Node getLeft() {
 		return left;
 	}
 
-	public void setLeft(Node<T> left) {
+	public void setLeft(Node left) {
 		this.left = left;
 	}
 
-	public Node<T> getRight() {
+	public Node getRight() {
 		return right;
 	}
 
-	public void setRight(Node<T> right) {
+	public void setRight(Node right) {
 		this.right = right;
 	}
 
-	public Node<T> getParent() {
+	public Node getParent() {
 		return parent;
 	}
 
-	public void setParent(Node<T> parent) {
+	public void setParent(Node parent) {
 		this.parent = parent;
 	}
 
-	public void print() {
-		System.out.print(this.value);
+	/////////////////////////////////////////////
+	// Print
+	/////////////////////////////////////////////
+
+	public void printLetter() {
+		System.out.print(this.letter);
+	}
+
+	public void printAmount() {
+		System.out.print(this.amount);
 	}
 }
