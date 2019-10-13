@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.HashMap;
 
 /**
- * The {@code InputFile} class implements the necessary functions to read the text from files and
- * use it in the operations of compress/decompress.
+ * The {@code InputFile} class implements the necessary functions to read the
+ * text from files and use it in the operations of compress/decompress.
  * 
  * @author Ranieri Santos
  * @author imns1ght
@@ -49,8 +49,7 @@ public class InputFile {
 
                                 for (char char_string : c) {
                                         if (this.map_char.containsKey(char_string)) {
-                                                this.map_char.put(char_string,
-                                                                this.map_char.get(char_string) + 1);
+                                                this.map_char.put(char_string, this.map_char.get(char_string) + 1);
                                         } else {
                                                 this.map_char.put(char_string, 1);
                                         }
@@ -69,8 +68,7 @@ public class InputFile {
          */
         protected void printHashMap() {
                 this.map_char.entrySet().forEach(entry -> {
-                        System.out.println(
-                                        "[ " + entry.getKey() + " | " + entry.getValue() + "\t]");
+                        System.out.println("[ " + entry.getKey() + " | " + entry.getValue() + "\t]");
                 });
         }
 

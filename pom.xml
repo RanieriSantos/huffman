@@ -6,6 +6,7 @@
   <groupId>huffman</groupId>
   <artifactId>huffman</artifactId>
   <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
 
   <name>huffman</name>
   <!-- FIXME change it to the project's website -->
@@ -20,6 +21,24 @@
   <dependencies></dependencies>
 
   <build>
+    <plugins>
+      <plugin>
+
+        <!-- Building an executable jar -->
+
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <!-- give full qualified name of your main class-->
+              <mainClass>huffman.Main</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
     <pluginManagement>
       <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
