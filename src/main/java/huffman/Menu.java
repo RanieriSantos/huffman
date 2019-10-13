@@ -8,7 +8,6 @@ public class Menu {
         public Menu(String[] args) {
                 if (args.length == 0) {
                         printHelp();
-                        throw new IllegalArgumentException("At least 1 parameter required!");
                 } else {
                         this.args = args;
                 }
@@ -17,31 +16,36 @@ public class Menu {
         protected void menu() {
                 Scanner in = new Scanner(System.in);
                 String path;
-                for (String option : this.args) {
-                        if (option.equals("c")) {
-                                if (this.args.length == 1) {
-                                        System.out.print("File path: ");
-                                        path = in.nextLine();
-                                        System.out.println("Compressing " + path + "\n");
-                                        Compress toupeira = new Compress(path);
-                                        System.out.println("Hello world!");
-                                        BSTree test = new BSTree(toupeira.getMap());
-                                        test.print();
-                                } else {
-                                        System.out.println("Compressing " + this.args[1] + "\n");
-                                        Compress toupeira = new Compress(this.args[1]);
-                                        System.out.println("Hello world!");
-                                        BSTree test = new BSTree(toupeira.getMap());
-                                        test.print();
+
+                if (this.args != null) {
+                        for (String option : this.args) {
+                                if (option.equals("c")) {
+                                        if (this.args.length == 1) {
+                                                System.out.print("File path: ");
+                                                path = in.nextLine();
+                                                System.out.println("Compressing " + path + "\n");
+                                                Compress toupeira = new Compress(path);
+                                                System.out.println("Hello world!");
+                                                BSTree test = new BSTree(toupeira.getMap());
+                                                test.print();
+                                        } else {
+                                                System.out.println("Compressing " + this.args[1]
+                                                                + "\n");
+                                                Compress toupeira = new Compress(this.args[1]);
+                                                System.out.println("Hello world!");
+                                                BSTree test = new BSTree(toupeira.getMap());
+                                                test.print();
+                                        }
+
+                                } else if (option.equals("d")) {
+                                        System.out.println("Decompressing \n");
+
+                                        // TODO decompress
                                 }
-
-                        } else if (option.equals("d")) {
-                                System.out.println("Decompressing \n");
-
-                                // TODO decompress
                         }
                 }
 
+                in.close();
         }
 
         protected void printHelp() {

@@ -26,6 +26,19 @@ public class Node {
 	/**
 	 * Constructor with param.
 	 * 
+	 * @param node node to copy.
+	 */
+	public Node(Node node) {
+		this.letter = node.getLetter();
+		this.amount = node.getAmount();
+		this.left = null;
+		this.right = null;
+		this.parent = null;
+	}
+
+	/**
+	 * Constructor with param.
+	 * 
 	 * @param letter char of the node.
 	 * @param count  amount of chars.
 	 */

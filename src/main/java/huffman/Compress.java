@@ -20,7 +20,7 @@ public class Compress {
         public Compress(String input_path) {
                 InputFile reader = new InputFile(input_path);
                 this.map = new HashMap<Character, Integer>(reader.writeBuffer());
-                printHashMap();
+                // printHashMap();
         }
 
         /**
