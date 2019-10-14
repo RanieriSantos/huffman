@@ -4,19 +4,20 @@ public class Main {
         public static void main(String[] args) {
                 Compress toupeira = new Compress("docs/lolla.txt");
 
-                BSTree test = new BSTree(toupeira.getMap());
+              //  BSTree test = new BSTree(toupeira.getMap());
                 // test.print();
 
-                PriorityQueue heap = new PriorityQueue(5);
+                
 
-                while (test.getRoot() != null) {
-                        heap.add(test.getRoot());
-                        test.delete(test.getRoot());
-                }
+                // while (test.getRoot() != null) {
+                //         heap.add(test.getRoot());
+                //         test.delete(test.getRoot());
+                // }
 
-                heap.print();
+                // heap.print();
 
                 // Menu access = new Menu(args);
                 // access.menu();
+                System.out.println("alo");
         }
 }
