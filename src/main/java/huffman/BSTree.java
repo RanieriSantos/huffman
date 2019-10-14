@@ -49,6 +49,8 @@ public class BSTree {
 		hashMap.entrySet().forEach(entry -> {
 			add(entry.getKey(), entry.getValue());
 		});
+		
+		hashMap.clear();
 	}
 
 	/**

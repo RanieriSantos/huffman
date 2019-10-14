@@ -22,6 +22,16 @@ public class PriorityQueue {
                 this.capacity = capacity;
         }
 
+        PriorityQueue(BSTree tree) {
+                this.capacity = tree.getSize();
+                this.data = new Node[this.capacity];
+
+                while (tree.getRoot() != null) {
+                        add(tree.getRoot());
+                        tree.delete(tree.getRoot());
+                }
+        }
+
         /**
          * Maintain the heap property of a node and your childrens.
          * 
@@ -32,19 +42,21 @@ public class PriorityQueue {
                 int rightChild = getRightIndex(index);
                 int min;
 
-                if (leftChild < getCapacity() && (this.data[leftChild]
-                                .getAmount() < this.data[index].getAmount())) {
+                if (leftChild < getCapacity() && this.data[leftChild] != null
+                                && this.data[leftChild].getAmount() < this.data[index]
+                                                .getAmount()) {
                         min = leftChild;
                 } else {
                         min = index;
                 }
 
-                if (rightChild < getCapacity() && (this.data[rightChild]
-                                .getAmount() < this.data[min].getAmount())) {
+                if (rightChild < getCapacity() && this.data[rightChild] != null
+                                && this.data[rightChild].getAmount() < this.data[min].getAmount()) {
                         min = rightChild;
                 }
 
-                if (this.data[min].getAmount() != this.data[index].getAmount()) {
+                if (this.data[min] != null
+                                && this.data[min].getAmount() != this.data[index].getAmount()) {
                         Node tmp = this.data[index];
                         this.data[index] = this.data[min];
                         this.data[min] = tmp;
@@ -61,23 +73,8 @@ public class PriorityQueue {
                 Node new_node = new Node(node);
                 ensureCapacity();
                 this.data[getSize()] = new_node;
-                int curr_index = decreaseNode(getSize());
+                decreaseNode(getSize());
                 this.size++;
-
-                // Update heap tree.
-                if (curr_index != -1) {
-                        this.data[curr_index].setParent(getParentNode(curr_index));
-                        this.data[curr_index].setLeft(getLeftNode(curr_index));
-                        this.data[curr_index].setRight(getRightNode(curr_index));
-
-                        int parent_index = getParentIndex(curr_index);
-
-                        if (getLeftIndex(parent_index) == curr_index) {
-                                this.data[parent_index].setLeft(this.data[curr_index]);
-                        } else if (getRightIndex(parent_index) == curr_index) {
-                                this.data[parent_index].setRight(this.data[curr_index]);
-                        }
-                }
         }
 
         /**
@@ -90,8 +87,9 @@ public class PriorityQueue {
                         return null;
                 }
 
-                Node min = this.data[0];
-                this.data[0] = this.data[getSize() - 1];
+                Node min = new Node(this.data[0]);
+                this.data[0] = new Node(this.data[getSize() - 1]);
+                this.data[getSize() - 1] = null;
                 this.size--;
                 minHeapify(0);
 
@@ -198,7 +196,7 @@ public class PriorityQueue {
         /////////////////////////////////////////////
 
         public void print() {
-                for (int i = 0; i < this.capacity; i++) {
+                for (int i = 0; i < this.size; i++) {
                         System.out.println("[ " + (char) this.data[i].getLetter() + " | "
                                         + this.data[i].getAmount() + " ]");
                 }

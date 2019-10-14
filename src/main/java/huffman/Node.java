@@ -31,9 +31,36 @@ public class Node {
 	public Node(Node node) {
 		this.letter = node.getLetter();
 		this.amount = node.getAmount();
-		this.left = null;
-		this.right = null;
+		this.left = node.getLeft();
+		this.right = node.getRight();
+		this.parent = node.getParent();
+	}
+
+	/**
+	 * Constructor with param.
+	 * 
+	 * @param a node to join.
+	 * @param b node to join.
+	 */
+	public Node(Node a, Node b) {
+		this.letter = 0;
+		this.amount = a.getAmount() + b.getAmount();
+		this.left = a;
+		this.right = b;
 		this.parent = null;
+		a.setParent(this);
+		b.setParent(this);
+
+		// Remove old connections only if node a and/or b has a letter.
+		if (a.getLetter() != 0) {
+			a.setLeft(null);
+			a.setRight(null);
+		}
+
+		if (b.getLetter() != 0) {
+			b.setLeft(null);
+			b.setRight(null);
+		}
 	}
 
 	/**
