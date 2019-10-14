@@ -10,9 +10,8 @@ import java.util.HashMap;
  * @author imns1ght
  */
 public class Compress {
-        protected HashMap<Character, Integer> map;
-        protected PriorityQueue queue;
-        protected BSTree tree;
+        private PriorityQueue heap;
+        private HashMap<Character, String> map;
 
         /**
          * Default constructor
@@ -20,34 +19,73 @@ public class Compress {
          * @param input_path path to the input file.
          */
         public Compress(String input_path) {
+                this.map = new HashMap<Character, String>();
                 InputFile reader = new InputFile(input_path);
-                this.map = new HashMap<Character, Integer>(reader.writeBuffer());
-                this.tree = new BSTree(this.map);
-                this.queue = new PriorityQueue(this.tree);
+                HashMap<Character, Integer> charCount =
+                                new HashMap<Character, Integer>(reader.writeBuffer());
+                BSTree charTree = new BSTree(charCount);
+                this.heap = new PriorityQueue(charTree);
                 startCompress();
         }
 
         private void startCompress() {
-                merge();
+                mergeToTree();
+                treeToMap(this.heap.peek(), "");
+                printHashMap();
         }
 
-        private void merge() {
-                while (this.queue.getSize() > 1) {
-                        Node a = this.queue.poll();
-                        Node b = this.queue.poll();
+        private void mergeToTree() {
+                while (this.heap.getSize() > 1) {
+                        Node a = this.heap.poll();
+                        Node b = this.heap.poll();
                         Node new_node = new Node(a, b);
-                        this.queue.add(new_node);
+                        this.heap.add(new_node);
                 }
+        }
+
+        private String treeToMap(Node node, String bin) {
+                if (node != null) {
+                        if (node.getLeft() == null) {
+                                // If node is leaf.
+                                this.map.put((char) node.getLetter(), bin);
+                                bin = bin.substring(0, bin.length() - 1); // bin--
+                                return bin;
+                        } else {
+                                bin += '0';
+                                bin = treeToMap(node.getLeft(), bin);
+                        }
+
+                        if (node.getRight() == null) {
+                                // If node is leaf.
+                                this.map.put((char) node.getLetter(), bin);
+                                bin = bin.substring(0, bin.length() - 1); // bin--
+                                return bin;
+                        } else {
+                                bin += '1';
+                                bin = treeToMap(node.getRight(), bin);
+                        }
+                }
+
+                if (bin.length() > 0)
+                        bin = bin.substring(0, bin.length() - 1); // bin--
+
+                return bin;
         }
 
         /**
          * Print the hash map.
          */
         public void print() {
-                this.queue.print();
+                this.heap.print();
         }
 
-        public HashMap<Character, Integer> getMap() {
-                return map;
+        /**
+         * Print the hash map.
+         */
+        protected void printHashMap() {
+                this.map.entrySet().forEach(entry -> {
+                        System.out.println(
+                                        "[ " + entry.getKey() + " | " + entry.getValue() + "\t]");
+                });
         }
 }
