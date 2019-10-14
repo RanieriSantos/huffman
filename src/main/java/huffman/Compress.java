@@ -1,5 +1,6 @@
 package huffman;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 /**
@@ -10,6 +11,7 @@ import java.util.HashMap;
  * @author imns1ght
  */
 public class Compress {
+        private IOFile iofile;
         private PriorityQueue heap;
         private HashMap<Character, String> map;
 
@@ -20,9 +22,9 @@ public class Compress {
          */
         public Compress(String input_path) {
                 this.map = new HashMap<Character, String>();
-                InputFile reader = new InputFile(input_path);
+                iofile = new IOFile(input_path);
                 HashMap<Character, Integer> charCount =
-                                new HashMap<Character, Integer>(reader.writeBuffer());
+                                new HashMap<Character, Integer>(iofile.bufferToMap());
                 BSTree charTree = new BSTree(charCount);
                 this.heap = new PriorityQueue(charTree);
                 startCompress();
@@ -32,6 +34,11 @@ public class Compress {
                 mergeToTree();
                 treeToMap(this.heap.peek(), "");
                 printHashMap();
+                try {
+                        this.iofile.writeToFile(this.map);
+                } catch(IOException e) {
+                        e.printStackTrace();
+                }
         }
 
         private void mergeToTree() {
