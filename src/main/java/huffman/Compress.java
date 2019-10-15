@@ -22,7 +22,7 @@ public class Compress {
          */
         public Compress(String input_path) {
                 this.map = new HashMap<Character, String>();
-                iofile = new IOFile(input_path);
+                this.iofile = new IOFile(input_path);
                 HashMap<Character, Integer> charCount =
                                 new HashMap<Character, Integer>(iofile.bufferToMap());
                 BSTree charTree = new BSTree(charCount);
