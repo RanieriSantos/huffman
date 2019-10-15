@@ -12,17 +12,8 @@ import java.util.HashMap;
  */
 public class Decompress {
         private IOFile iofile;
-        private HashMap<Character, String> map;
 
         public Decompress(String input_path, String map_path) throws IOException {
-                this.iofile = new IOFile(input_path);
-                this.map = new IOFile(map_path).symbolTableToMap(map_path);
-                startDecompressing();
+                this.iofile = new IOFile(input_path, map_path);
         }
-
-        private void startDecompressing() throws IOException {
-                this.iofile.recover(this.iofile, this.map);
-        }
-
-        
 }

@@ -3,12 +3,15 @@ package huffman;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.BitSet;
 
@@ -21,6 +24,7 @@ import java.util.BitSet;
  */
 public class IOFile {
         private HashMap<Character, Integer> map_char; // Chars readed from file.
+        private HashMap<String, Character> keyMap;
         private BufferedReader input; // Input file.
         private char[] charsFromFile;
 
@@ -30,9 +34,8 @@ public class IOFile {
          * @param input_path path to the input file.
          */
         public IOFile(String input_path) {
-                this.map_char = new HashMap<Character, Integer>();
-
                 try {
+                        this.map_char = new HashMap<Character, Integer>();
                         this.input = new BufferedReader(new FileReader(input_path));
                         bufferToMap();
                 } catch (FileNotFoundException e) {
@@ -40,21 +43,35 @@ public class IOFile {
                 }
         }
 
-        protected void recover(IOFile toDecompress, HashMap<Character, String> keyMap) throws IOException {
-                BitSet decompress_buffer = new BitSet();
-                BufferedWriter decompressed = new BufferedWriter(new FileWriter("docs/decompressed.txt"));
-                String line;
-                
-                System.out.println(toDecompress.getInput().readLine());
-                while ((line = toDecompress.input.readLine()) != null) {
-                        this.charsFromFile = line.toCharArray();
-                        for (char char_string : this.charsFromFile) {
-                                decompress_buffer.set(char_string);
-                        }
+        public IOFile(String input_path, String map) throws IOException {
+                try {
+                        InputStream temp = new FileInputStream(input_path);
+                        this.keyMap = new HashMap<String, Character>();
+                        symbolTableToMap(map);
+                        recover(temp);
+
+                } catch (FileNotFoundException e) {
+                        e.printStackTrace();
                 }
+        }
 
-
-                decompressed.close();
+        protected void recover(InputStream temp) throws IOException {
+                OutputStream decompressed = new BufferedOutputStream(new FileOutputStream("docs/decompressed.txt"));
+                String letter = "";
+                try {
+                        for (byte var : temp.readAllBytes()) {
+                                letter += var;
+                                System.out.println(letter);
+                                if (this.keyMap.containsKey(letter)) {
+                                        decompressed.write(this.keyMap.get(letter));
+                                        letter = "";
+                                }
+                        }
+                        temp.close();
+                        decompressed.close();
+                } catch (IOException e) {
+                        e.printStackTrace();
+                }
         }
 
         protected void writeToFile(HashMap<Character, String> map_bin) throws IOException {
@@ -129,23 +146,17 @@ public class IOFile {
          * @return A HashMap of symbols.
          * @throws FileNotFoundException If input file not found.
          */
-        protected HashMap<Character, String> symbolTableToMap(String symbolTablePath) throws FileNotFoundException {
-                HashMap<Character, String> map = new HashMap<Character, String>();
+        protected void symbolTableToMap(String symbolTablePath) throws FileNotFoundException {
                 BufferedReader input = new BufferedReader(new FileReader(symbolTablePath));
                 String line;
                 try {
                         while ((line = input.readLine()) != null) {
-                                map.put(line.charAt(0), line.substring(1));
+                                this.keyMap.put(line.substring(1), line.charAt(0));
                         }
                         input.close();
                 } catch (IOException e) {
                         e.printStackTrace();
                 }
-                return map;
-        }
-
-        public BufferedReader getInput() {
-                return this.input;
         }
 
         /**
