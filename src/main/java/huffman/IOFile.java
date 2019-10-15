@@ -106,6 +106,12 @@ public class IOFile {
                 return this.map_char;
         }
 
+        /**
+         * 
+         * @param symbolTablePath Path to the file map of compressed file.
+         * @return A HashMap of symbols.
+         * @throws FileNotFoundException If input file not found.
+         */
         protected HashMap<Character, String> symbolTableToMap(String symbolTablePath) throws FileNotFoundException {
                 HashMap<Character, String> map = new HashMap<Character, String>();
                 BufferedReader input = new BufferedReader(new FileReader(symbolTablePath));
