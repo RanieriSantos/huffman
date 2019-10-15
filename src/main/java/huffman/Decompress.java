@@ -1,9 +1,6 @@
 package huffman;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashMap;
 
 /**
@@ -19,26 +16,7 @@ public class Decompress {
 
         public Decompress(String input_path, String map) throws FileNotFoundException {
                 this.iofile = new IOFile(input_path);
-                this.map = new HashMap<Character, String>();
-                symbolTableToMap(map);
-
+                this.map = new IOFile(map).symbolTableToMap(map);
         }
 
-        private void symbolTableToMap(String map) throws FileNotFoundException {
-                BufferedReader input = new BufferedReader(new FileReader(map));
-                String line;
-                try {
-                        while ((line = input.readLine()) != null) {
-                                this.map.put(line.charAt(0), line.substring(1));
-                        }
-                } catch (IOException e) {
-                        e.printStackTrace();
-                }
-        }
-
-       // private void 
-
-        private void startDecompress() {
-
-        }
 }

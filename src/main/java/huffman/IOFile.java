@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.BitSet;
 
 /**
- * The {@code InputFile} class implements the necessary functions to read the text from files and
- * use it in the operations of compress/decompress.
+ * The {@code InputFile} class implements the necessary functions to read the
+ * text from files and use it in the operations of compress/decompress.
  * 
  * @author Ranieri Santos
  * @author imns1ght
@@ -42,12 +42,9 @@ public class IOFile {
 
         protected void writeToFile(HashMap<Character, String> map_bin) throws IOException {
                 BitSet bin_buffer = new BitSet();
-                BufferedWriter symbol_table =
-                                new BufferedWriter(new FileWriter("docs/symbol_table.edt"));
-                BufferedWriter debug_compressed =
-                                new BufferedWriter(new FileWriter("docs/debug_compressed.txt"));
-                OutputStream compressed = new BufferedOutputStream(
-                                new FileOutputStream("docs/compressed.edz"));
+                BufferedWriter symbol_table = new BufferedWriter(new FileWriter("docs/symbol_table.edt"));
+                BufferedWriter debug_compressed = new BufferedWriter(new FileWriter("docs/debug_compressed.txt"));
+                OutputStream compressed = new BufferedOutputStream(new FileOutputStream("docs/compressed.edz"));
 
                 // Write symbol table.
                 for (HashMap.Entry<Character, String> entry : map_bin.entrySet()) {
@@ -63,9 +60,7 @@ public class IOFile {
                         if (curr_key != null) {
                                 for (int i = 0; i < curr_key.length(); i++) {
 
-                                        bin_buffer.set(num_bitsets,
-                                                        curr_key.charAt(i) - '0' > 0 ? true
-                                                                        : false);
+                                        bin_buffer.set(num_bitsets, curr_key.charAt(i) - '0' > 0 ? true : false);
                                         num_bitsets++;
                                 }
                         }
@@ -97,8 +92,7 @@ public class IOFile {
 
                                 for (char char_string : this.charsFromFile) {
                                         if (this.map_char.containsKey(char_string)) {
-                                                this.map_char.put(char_string,
-                                                                this.map_char.get(char_string) + 1);
+                                                this.map_char.put(char_string, this.map_char.get(char_string) + 1);
                                         } else {
                                                 this.map_char.put(char_string, 1);
                                         }
@@ -112,13 +106,27 @@ public class IOFile {
                 return this.map_char;
         }
 
+        protected HashMap<Character, String> symbolTableToMap(String symbolTablePath) throws FileNotFoundException {
+                HashMap<Character, String> map = new HashMap<Character, String>();
+                BufferedReader input = new BufferedReader(new FileReader(symbolTablePath));
+                String line;
+                try {
+                        while ((line = input.readLine()) != null) {
+                                map.put(line.charAt(0), line.substring(1));
+                        }
+                        input.close();
+                } catch (IOException e) {
+                        e.printStackTrace();
+                }
+                return map;
+        }
+
         /**
          * Print the hash map.
          */
         protected void printHashMap() {
                 this.map_char.entrySet().forEach(entry -> {
-                        System.out.println(
-                                        "[ " + entry.getKey() + " | " + entry.getValue() + "\t]");
+                        System.out.println("[ " + entry.getKey() + " | " + entry.getValue() + "\t]");
                 });
         }
 }
