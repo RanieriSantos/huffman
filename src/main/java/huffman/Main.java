@@ -1,15 +1,18 @@
 package huffman;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class Main {
-        public static void main(String[] args) throws FileNotFoundException {
-                Compress toupeira = new Compress("docs/lolla.txt");
-                // Decompress toupeira = new Decompress("docs/compressed.edz",
-                // "docs/symbol_table.edt");
+        public static void main(String[] args) throws IOException {
+                // Compress toupeira = new Compress("docs/lolla.txt");
+                Decompress toupeira = new Decompress("docs/compressed.edz", "docs/symbol_table.edt");
 
                 // Menu access = new Menu(args);
                 // access.menu();
                 System.out.println("THE END?");
         }
 }
+// TODO hier
+/*
+ * Remember to remove garbage code; Handle exceptions.
+ */

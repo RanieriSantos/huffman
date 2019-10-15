@@ -40,6 +40,23 @@ public class IOFile {
                 }
         }
 
+        protected void recover(IOFile toDecompress, HashMap<Character, String> keyMap) throws IOException {
+                BitSet decompress_buffer = new BitSet();
+                BufferedWriter decompressed = new BufferedWriter(new FileWriter("docs/decompressed.txt"));
+                String line;
+                
+                System.out.println(toDecompress.getInput().readLine());
+                while ((line = toDecompress.input.readLine()) != null) {
+                        this.charsFromFile = line.toCharArray();
+                        for (char char_string : this.charsFromFile) {
+                                decompress_buffer.set(char_string);
+                        }
+                }
+
+
+                decompressed.close();
+        }
+
         protected void writeToFile(HashMap<Character, String> map_bin) throws IOException {
                 BitSet bin_buffer = new BitSet();
                 BufferedWriter symbol_table = new BufferedWriter(new FileWriter("docs/symbol_table.edt"));
@@ -125,6 +142,10 @@ public class IOFile {
                         e.printStackTrace();
                 }
                 return map;
+        }
+
+        public BufferedReader getInput() {
+                return this.input;
         }
 
         /**
