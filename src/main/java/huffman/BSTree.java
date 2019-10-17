@@ -45,7 +45,7 @@ public class BSTree {
 	 * 
 	 * @param hashMap letter that will be added to the tree.
 	 */
-	public BSTree(HashMap<Character, Integer> hashMap) {
+	public BSTree(HashMap<Integer, Integer> hashMap) {
 		hashMap.entrySet().forEach(entry -> {
 			add(entry.getKey(), entry.getValue());
 		});

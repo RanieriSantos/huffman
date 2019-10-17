@@ -13,7 +13,7 @@ import java.util.HashMap;
 public class Compress {
         private IOFile iofile;
         private PriorityQueue heap;
-        private HashMap<Character, String> map;
+        private HashMap<Integer, String> map;
 
         /**
          * Default constructor
@@ -21,10 +21,10 @@ public class Compress {
          * @param input_path path to the input file.
          */
         public Compress(String input_path) {
-                this.map = new HashMap<Character, String>();
+                this.map = new HashMap<Integer, String>();
                 this.iofile = new IOFile(input_path);
-                HashMap<Character, Integer> charCount =
-                                new HashMap<Character, Integer>(iofile.bufferToMap());
+                HashMap<Integer, Integer> charCount =
+                                new HashMap<Integer, Integer>(iofile.bufferToMap());
                 BSTree charTree = new BSTree(charCount);
                 this.heap = new PriorityQueue(charTree);
                 startCompress();
@@ -54,7 +54,7 @@ public class Compress {
                 if (node != null) {
                         if (node.getLeft() == null) {
                                 // If node is leaf.
-                                this.map.put((char) node.getLetter(), bin);
+                                this.map.put(node.getLetter(), bin);
                                 bin = bin.substring(0, bin.length() - 1); // bin--
                                 return bin;
                         } else {
@@ -64,7 +64,7 @@ public class Compress {
 
                         if (node.getRight() == null) {
                                 // If node is leaf.
-                                this.map.put((char) node.getLetter(), bin);
+                                this.map.put(node.getLetter(), bin);
                                 bin = bin.substring(0, bin.length() - 1); // bin--
                                 return bin;
                         } else {
