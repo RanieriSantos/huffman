@@ -1,5 +1,6 @@
 package huffman;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Menu {
@@ -13,42 +14,34 @@ public class Menu {
                 }
         }
 
-        protected void menu() {
+        protected void menu() throws IOException {
                 Scanner in = new Scanner(System.in);
-                String path;
 
                 if (this.args != null) {
                         for (String option : this.args) {
-                                if (option.equals("c")) {
-                                        if (this.args.length == 1) {
-                                                System.out.print("File path: ");
-                                                path = in.nextLine();
-                                                System.out.println("Compressing " + path + "\n");
-                                                Compress toupeira = new Compress(path);
-                                                toupeira.print();
-                                        } else {
-                                                System.out.println("Compressing " + this.args[1]
-                                                                + "\n");
-                                                Compress toupeira = new Compress(this.args[1]);
-                                                toupeira.print();
-                                        }
-
-                                } else if (option.equals("d")) {
+                                if (option.equals("compress")) {
+                                        Compress compress = new Compress(this.args[1], this.args[2], this.args[3]);
+                                        break;
+                                } else if (option.equals("extract")) {
                                         System.out.println("Decompressing \n");
-
-                                        // TODO decompress
+                                        Decompress decompress = new Decompress(this.args[1], this.args[2],
+                                                        this.args[3]);
+                                        break;
+                                } else {
+                                        printHelp();
+                                        break;
                                 }
                         }
                 }
-
                 in.close();
         }
 
         protected void printHelp() {
-                System.out.println("No Arguments provided");
-                System.out.println("Use: java -jar huffman.jar [option] [file]");
-                System.out.println("\tc - To compress file.");
-                System.out.println("\td - To decompress file.");
-                System.out.println("\th - To print this help.\n");
+                System.out.println("Invalid argument.");
+                System.out.println("Use: java -jar huffman.jar compress file.txt file.edz file.edt");
+                System.out.println("Use: java -jar huffman.jar extract file.edz file.edt file.txt");
+                System.out.println("\tcompress - To compress file.");
+                System.out.println("\textract - To decompress file.");
+                System.out.println("\thelp - To print this help.\n");
         }
 }

@@ -20,21 +20,21 @@ public class Compress {
          * 
          * @param input_path path to the input file.
          */
-        public Compress(String input_path) {
+        public Compress(String input_path, String compress, String compressMap) {
                 this.map = new HashMap<Integer, String>();
                 this.iofile = new IOFile(input_path);
                 HashMap<Integer, Integer> charCount = new HashMap<Integer, Integer>(iofile.bufferToMap());
                 BSTree charTree = new BSTree(charCount);
                 this.heap = new PriorityQueue(charTree);
-                startCompress();
+                startCompress(compress, compressMap);
         }
 
-        private void startCompress() {
+        private void startCompress(String compress, String compressMap) {
                 mergeToTree();
                 treeToMap(this.heap.peek(), "");
                 printHashMap();
                 try {
-                        this.iofile.writeToFile(this.map);
+                        this.iofile.writeToFile(this.map, compress, compressMap);
                 } catch (IOException e) {
                         e.printStackTrace();
                 }

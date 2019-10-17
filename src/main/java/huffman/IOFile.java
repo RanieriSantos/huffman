@@ -50,20 +50,20 @@ public class IOFile {
          * @param input_path path of input file.
          * @param map        path of char map.
          */
-        public IOFile(String input_path, String map) throws IOException {
+        public IOFile(String input_path, String map, String output) throws IOException {
                 try {
                         InputStream temp = new FileInputStream(input_path);
                         this.keyMap = new HashMap<String, Integer>();
                         symbolTableToMap(map);
-                        recover(temp);
+                        recover(temp, output);
 
                 } catch (FileNotFoundException e) {
                         e.printStackTrace();
                 }
         }
 
-        protected void recover(InputStream temp) throws IOException {
-                OutputStream decompressed = new BufferedOutputStream(new FileOutputStream("docs/decompressed.txt"));
+        protected void recover(InputStream temp, String output) throws IOException {
+                OutputStream decompressed = new BufferedOutputStream(new FileOutputStream(output));
                 String letter = "";
                 int charac;
                 try {
@@ -84,12 +84,14 @@ public class IOFile {
                 }
         }
 
-        protected void writeToFile(HashMap<Integer, String> map_bin) throws IOException {
+        protected void writeToFile(HashMap<Integer, String> map_bin, String compress, String compressMap)
+                        throws IOException {
                 int charac;
                 BitSet bin_buffer = new BitSet();
-                BufferedWriter symbol_table = new BufferedWriter(new FileWriter("docs/symbol_table.edt"));
-                BufferedWriter debug_compressed = new BufferedWriter(new FileWriter("docs/debug_compressed.txt"));
-                OutputStream compressed = new BufferedOutputStream(new FileOutputStream("docs/compressed.edz"));
+                BufferedWriter symbol_table = new BufferedWriter(new FileWriter(compressMap));
+                // BufferedWriter debug_compressed = new BufferedWriter(new
+                // FileWriter("docs/debug_compressed.txt"));
+                OutputStream compressed = new BufferedOutputStream(new FileOutputStream(compress));
 
                 // Write symbol table.
                 for (HashMap.Entry<Integer, String> entry : map_bin.entrySet()) {
@@ -102,7 +104,7 @@ public class IOFile {
                 while ((charac = this.input.read()) != -1) {
                         // for (char curr_char : line.toCharArray()) {
                         String curr_key = map_bin.get(charac);
-                        debug_compressed.append(curr_key);
+                        // debug_compressed.append(curr_key);
 
                         if (curr_key != null) {
                                 for (int i = 0; i < curr_key.length(); i++) {
@@ -121,7 +123,7 @@ public class IOFile {
                 }
 
                 symbol_table.close();
-                debug_compressed.close();
+                // debug_compressed.close();
                 compressed.write(bits);
                 compressed.close();
         }
@@ -177,10 +179,6 @@ public class IOFile {
                 } catch (IOException e) {
                         e.printStackTrace();
                 }
-        }
-
-        protected void donePrint() {
-
         }
 
         /**
