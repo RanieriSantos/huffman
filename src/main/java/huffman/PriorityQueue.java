@@ -43,8 +43,7 @@ public class PriorityQueue {
                 int min;
 
                 if (leftChild < getCapacity() && this.data[leftChild] != null
-                                && this.data[leftChild].getAmount() < this.data[index]
-                                                .getAmount()) {
+                                && this.data[leftChild].getAmount() < this.data[index].getAmount()) {
                         min = leftChild;
                 } else {
                         min = index;
@@ -55,8 +54,7 @@ public class PriorityQueue {
                         min = rightChild;
                 }
 
-                if (this.data[min] != null
-                                && this.data[min].getAmount() != this.data[index].getAmount()) {
+                if (this.data[min] != null && this.data[min].getAmount() != this.data[index].getAmount()) {
                         Node tmp = this.data[index];
                         this.data[index] = this.data[min];
                         this.data[min] = tmp;
@@ -102,7 +100,7 @@ public class PriorityQueue {
          * @return minimum element.
          */
         protected Node peek() {
-                return this.data[0];
+                return this.size > 0 ? this.data[0] : null;
         }
 
         /**
@@ -117,8 +115,7 @@ public class PriorityQueue {
                         return -1;
                 }
 
-                while (this.data[index].getAmount() < this.data[getParentIndex(index)]
-                                .getAmount()) {
+                while (this.data[index].getAmount() < this.data[getParentIndex(index)].getAmount()) {
                         Node tmp = this.data[index];
                         this.data[index] = this.data[getParentIndex(index)];
                         this.data[getParentIndex(index)] = tmp;
@@ -197,8 +194,8 @@ public class PriorityQueue {
 
         public void print() {
                 for (int i = 0; i < this.size; i++) {
-                        System.out.println("[ " + (char) this.data[i].getLetter() + " | "
-                                        + this.data[i].getAmount() + " ]");
+                        System.out.println("[ " + (char) this.data[i].getLetter() + " | " + this.data[i].getAmount()
+                                        + " ]");
                 }
         }
 }

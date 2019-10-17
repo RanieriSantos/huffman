@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 
 /**
- * The {@code Compress} class implements functions to compress text files using the Huffman's coding
- * algorithm.
+ * The {@code Compress} class implements functions to compress text files using
+ * the Huffman's coding algorithm.
  * 
  * @author Ranieri Santos
  * @author imns1ght
@@ -23,8 +23,7 @@ public class Compress {
         public Compress(String input_path) {
                 this.map = new HashMap<Integer, String>();
                 this.iofile = new IOFile(input_path);
-                HashMap<Integer, Integer> charCount =
-                                new HashMap<Integer, Integer>(iofile.bufferToMap());
+                HashMap<Integer, Integer> charCount = new HashMap<Integer, Integer>(iofile.bufferToMap());
                 BSTree charTree = new BSTree(charCount);
                 this.heap = new PriorityQueue(charTree);
                 startCompress();
@@ -36,7 +35,7 @@ public class Compress {
                 printHashMap();
                 try {
                         this.iofile.writeToFile(this.map);
-                } catch(IOException e) {
+                } catch (IOException e) {
                         e.printStackTrace();
                 }
         }
@@ -55,7 +54,7 @@ public class Compress {
                         if (node.getLeft() == null) {
                                 // If node is leaf.
                                 this.map.put(node.getLetter(), bin);
-                                bin = bin.substring(0, bin.length() - 1); // bin--
+                                bin = bin.length() > 0 ? bin.substring(0, bin.length() - 1) : ""; // bin--
                                 return bin;
                         } else {
                                 bin += '0';
@@ -65,7 +64,7 @@ public class Compress {
                         if (node.getRight() == null) {
                                 // If node is leaf.
                                 this.map.put(node.getLetter(), bin);
-                                bin = bin.substring(0, bin.length() - 1); // bin--
+                                bin = bin.length() > 0 ? bin.substring(0, bin.length() - 1) : ""; // bin--
                                 return bin;
                         } else {
                                 bin += '1';
@@ -74,7 +73,7 @@ public class Compress {
                 }
 
                 if (bin.length() > 0)
-                        bin = bin.substring(0, bin.length() - 1); // bin--
+                        bin = bin.length() > 0 ? bin.substring(0, bin.length() - 1) : ""; // bin--
 
                 return bin;
         }
@@ -91,8 +90,7 @@ public class Compress {
          */
         protected void printHashMap() {
                 this.map.entrySet().forEach(entry -> {
-                        System.out.println(
-                                        "[ " + entry.getKey() + " | " + entry.getValue() + "\t]");
+                        System.out.println("[ " + entry.getKey() + " | " + entry.getValue() + "\t]");
                 });
         }
 }
