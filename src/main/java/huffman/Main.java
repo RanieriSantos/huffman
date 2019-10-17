@@ -4,8 +4,8 @@ import java.io.IOException;
 
 public class Main {
         public static void main(String[] args) throws IOException {
-                //Compress toupeira = new Compress("docs/toupeira.txt");
-                Decompress toupeira = new Decompress("docs/compressed.edz", "docs/symbol_table.edt");
+                Compress toupeira = new Compress("docs/toupeira.txt");
+                Decompress detoupeira = new Decompress("docs/compressed.edz", "docs/symbol_table.edt");
 
                 // Menu access = new Menu(args);
                 // access.menu();

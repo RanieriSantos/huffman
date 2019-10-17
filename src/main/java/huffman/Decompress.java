@@ -1,7 +1,6 @@
 package huffman;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 /**
  * The {@code Decompress} class implements functions to decompress text files
@@ -11,9 +10,9 @@ import java.util.HashMap;
  * @author imns1ght
  */
 public class Decompress {
-        private IOFile iofile;
 
         public Decompress(String input_path, String map_path) throws IOException {
-                this.iofile = new IOFile(input_path, map_path);
+                IOFile iofile = new IOFile(input_path, map_path);
+                iofile.donePrint();
         }
 }

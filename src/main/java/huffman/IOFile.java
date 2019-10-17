@@ -10,10 +10,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Writer;
-import java.util.HashMap;
 import java.util.BitSet;
+import java.util.HashMap;
 
 /**
  * The {@code InputFile} class implements the necessary functions to read the
@@ -25,8 +25,8 @@ import java.util.BitSet;
 public class IOFile {
         private HashMap<Character, Integer> map_char; // Chars readed from file.
         private HashMap<String, Character> keyMap;
-        private BufferedReader input; // Input file.
-        private char[] charsFromFile;
+        private FileInputStream file;
+        public BufferedReader input; // Input file.
 
         /**
          * Default constructor
@@ -35,8 +35,9 @@ public class IOFile {
          */
         public IOFile(String input_path) {
                 try {
+                        this.file = new FileInputStream(input_path);
+                        this.input = new BufferedReader(new InputStreamReader(file));
                         this.map_char = new HashMap<Character, Integer>();
-                        this.input = new BufferedReader(new FileReader(input_path));
                         bufferToMap();
                 } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -61,7 +62,6 @@ public class IOFile {
                 try {
                         for (byte var : temp.readAllBytes()) {
                                 letter += var;
-                                System.out.println(letter);
                                 if (this.keyMap.containsKey(letter)) {
                                         decompressed.write(this.keyMap.get(letter));
                                         letter = "";
@@ -75,6 +75,7 @@ public class IOFile {
         }
 
         protected void writeToFile(HashMap<Character, String> map_bin) throws IOException {
+                String line;
                 BitSet bin_buffer = new BitSet();
                 BufferedWriter symbol_table = new BufferedWriter(new FileWriter("docs/symbol_table.edt"));
                 BufferedWriter debug_compressed = new BufferedWriter(new FileWriter("docs/debug_compressed.txt"));
@@ -87,15 +88,18 @@ public class IOFile {
 
                 int num_bitsets = 0; // Number of bits
                 // Write compressed file.
-                for (char curr_char : this.charsFromFile) {
-                        String curr_key = map_bin.get(curr_char);
-                        debug_compressed.append(curr_key);
+                while ((line = this.input.readLine()) != null) {
+                        for (char curr_char : line.toCharArray()) {
+                                String curr_key = map_bin.get(curr_char);
+                                debug_compressed.append(curr_key);
 
-                        if (curr_key != null) {
-                                for (int i = 0; i < curr_key.length(); i++) {
+                                if (curr_key != null) {
+                                        for (int i = 0; i < curr_key.length(); i++) {
 
-                                        bin_buffer.set(num_bitsets, curr_key.charAt(i) - '0' > 0 ? true : false);
-                                        num_bitsets++;
+                                                bin_buffer.set(num_bitsets,
+                                                                curr_key.charAt(i) - '0' > 0 ? true : false);
+                                                num_bitsets++;
+                                        }
                                 }
                         }
                 }
@@ -119,20 +123,18 @@ public class IOFile {
          */
         protected HashMap<Character, Integer> bufferToMap() {
                 String line;
-
                 try {
                         while ((line = this.input.readLine()) != null) {
-                                this.charsFromFile = line.toCharArray();
-
-                                for (char char_string : this.charsFromFile) {
+                                for (char char_string : line.toCharArray()) {
                                         if (this.map_char.containsKey(char_string)) {
                                                 this.map_char.put(char_string, this.map_char.get(char_string) + 1);
                                         } else {
                                                 this.map_char.put(char_string, 1);
                                         }
                                 }
-
                         }
+                        this.file.getChannel().position(0);
+                        this.input = new BufferedReader(new InputStreamReader(this.file));
                 } catch (IOException e) {
                         e.printStackTrace();
                 }
@@ -157,6 +159,10 @@ public class IOFile {
                 } catch (IOException e) {
                         e.printStackTrace();
                 }
+        }
+
+        protected void donePrint(){
+                
         }
 
         /**
