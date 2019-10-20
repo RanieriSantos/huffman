@@ -1,7 +1,6 @@
 package huffman;
 
 import java.io.IOException;
-import java.util.Scanner;
 
 public class Menu {
         protected String[] args;
@@ -15,15 +14,14 @@ public class Menu {
         }
 
         protected void menu() throws IOException {
-                Scanner in = new Scanner(System.in);
-
                 if (this.args != null) {
                         for (String option : this.args) {
                                 if (option.equals("compress")) {
+                                        System.out.println("Compressing " + this.args[1] + "\n");
                                         Compress compress = new Compress(this.args[1], this.args[2], this.args[3]);
                                         break;
                                 } else if (option.equals("extract")) {
-                                        System.out.println("Decompressing \n");
+                                        System.out.println("Decompressing " + this.args[1] + "\n");
                                         Decompress decompress = new Decompress(this.args[1], this.args[2],
                                                         this.args[3]);
                                         break;
@@ -33,7 +31,6 @@ public class Menu {
                                 }
                         }
                 }
-                in.close();
         }
 
         protected void printHelp() {

@@ -10,7 +10,6 @@ import java.io.IOException;
  * @author imns1ght
  */
 public class Decompress {
-
         public Decompress(String input_path, String map_path, String output) throws IOException {
                 IOFile iofile = new IOFile(input_path, map_path, output);
         }

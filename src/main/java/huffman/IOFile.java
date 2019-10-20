@@ -1,9 +1,9 @@
 package huffman;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -25,20 +26,20 @@ import java.util.HashMap;
 public class IOFile {
         private HashMap<Integer, Integer> map_char; // Chars readed from file.
         private HashMap<String, Integer> keyMap;
-        private InputStream input;
-        // public BufferedReader input; // Input file.
+        private FileInputStream in;// Aux to reset buffer to the beginning.
+        private BufferedReader input;// Input file.
 
         /**
-         * Default constructor
+         * Compress constructor
          * 
          * @param input_path path of input file.
          */
         public IOFile(String input_path) {
                 try {
-                        this.input = new BufferedInputStream(new FileInputStream(input_path));
-                        // this.input = new BufferedReader(new InputStreamReader(file));
+                        this.in = new FileInputStream(new File(input_path));
+                        this.input = new BufferedReader(new InputStreamReader(this.in));
                         this.map_char = new HashMap<Integer, Integer>();
-                        bufferToMap();
+                        fileToMap();
                 } catch (FileNotFoundException e) {
                         e.printStackTrace();
                 }
@@ -62,58 +63,69 @@ public class IOFile {
                 }
         }
 
+        /**
+         * 
+         * @param temp
+         * @param output
+         * @throws IOException
+         */
         protected void recover(InputStream temp, String output) throws IOException {
                 OutputStream decompressed = new BufferedOutputStream(new FileOutputStream(output));
+                byte[] buffer = temp.readAllBytes();
                 String letter = "";
-                int charac;
                 try {
-                        while ((charac = temp.read()) != -1) {
-                                letter += charac;
+                        for (byte b : buffer) {
+                                letter += (byte) b;
                                 if (this.keyMap.containsKey(letter)) {
                                         decompressed.write((int) (this.keyMap.get(letter)));
                                         letter = "";
-                                } else if (Integer.valueOf(this.keyMap.get("\n")).toString().equals(letter)) {
-                                        decompressed.write(10);
-                                        letter = "";
                                 }
                         }
+                        letter = "";
                         temp.close();
                         decompressed.close();
                 } catch (IOException e) {
                         e.printStackTrace();
+                        System.exit(1);
                 }
         }
 
+        /**
+         * 
+         * @param map_bin
+         * @param compress
+         * @param compressMap
+         * @throws IOException
+         */
         protected void writeToFile(HashMap<Integer, String> map_bin, String compress, String compressMap)
                         throws IOException {
                 int charac;
                 BitSet bin_buffer = new BitSet();
                 BufferedWriter symbol_table = new BufferedWriter(new FileWriter(compressMap));
-                // BufferedWriter debug_compressed = new BufferedWriter(new
-                // FileWriter("docs/debug_compressed.txt"));
                 OutputStream compressed = new BufferedOutputStream(new FileOutputStream(compress));
 
                 // Write symbol table.
                 for (HashMap.Entry<Integer, String> entry : map_bin.entrySet()) {
-                        int asc2 = entry.getKey();
-                        symbol_table.append(Character.toString((char) asc2) + entry.getValue() + '\n');
+                        if (entry.getKey() == 10 || entry.getKey() == (int) ('\n')) {
+                                symbol_table.append("EOF" + entry.getValue() + '\n');
+                        } else if (entry.getKey() == 13) {
+                                symbol_table.append("CR" + entry.getValue() + '\n');
+                        } else {
+                                symbol_table.append(Character.toString((char) (int) entry.getKey()) + entry.getValue()
+                                                + '\n');
+                        }
                 }
 
                 int num_bitsets = 0; // Number of bits
                 // Write compressed file.
                 while ((charac = this.input.read()) != -1) {
-                        // for (char curr_char : line.toCharArray()) {
                         String curr_key = map_bin.get(charac);
-                        // debug_compressed.append(curr_key);
-
                         if (curr_key != null) {
                                 for (int i = 0; i < curr_key.length(); i++) {
-
                                         bin_buffer.set(num_bitsets, curr_key.charAt(i) - '0' > 0 ? true : false);
                                         num_bitsets++;
                                 }
                         }
-                        // }
                 }
 
                 byte[] bits = new byte[num_bitsets];
@@ -123,7 +135,6 @@ public class IOFile {
                 }
 
                 symbol_table.close();
-                // debug_compressed.close();
                 compressed.write(bits);
                 compressed.close();
         }
@@ -133,25 +144,21 @@ public class IOFile {
          * 
          * @return reference to the hash map.
          */
-        protected HashMap<Integer, Integer> bufferToMap() {
-                this.input.mark(0);
+        protected HashMap<Integer, Integer> fileToMap() {
                 int charac;
                 try {
                         while ((charac = this.input.read()) != -1) {
-                                // for (char char_string : line.toCharArray()) {
                                 if (this.map_char.containsKey(charac)) {
                                         this.map_char.put(charac, this.map_char.get(charac) + 1);
                                 } else {
                                         this.map_char.put(charac, 1);
                                 }
-                                // }
                         }
-                        this.input.reset();
-                        // this.input = new BufferedReader(new InputStreamReader(this.file));
+                        this.in.getChannel().position(0);
+                        this.input = new BufferedReader(new InputStreamReader(this.in));
                 } catch (IOException e) {
                         e.printStackTrace();
                 }
-
                 return this.map_char;
         }
 
@@ -166,13 +173,12 @@ public class IOFile {
                 String line;
                 try {
                         while ((line = input.readLine()) != null) {
-                                if (line.length() == 0) {
-                                        // char temp = line.charAt(0);
-                                        line = input.readLine();
-                                        this.keyMap.put(String.valueOf('\n'), Integer.parseInt(line));
+                                if (line.contains("EOF")) { // End of line
+                                        this.keyMap.put(line.substring(3), 10);
+                                } else if (line.contains("CR")) { // Carriage return
+                                        this.keyMap.put(line.substring(2), 13);
                                 } else {
-                                        int temp = line.charAt(0);
-                                        this.keyMap.put(line.substring(1), temp);
+                                        this.keyMap.put(line.substring(1), (int) line.charAt(0));
                                 }
                         }
                         input.close();

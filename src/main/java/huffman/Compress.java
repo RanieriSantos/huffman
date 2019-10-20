@@ -23,7 +23,7 @@ public class Compress {
         public Compress(String input_path, String compress, String compressMap) {
                 this.map = new HashMap<Integer, String>();
                 this.iofile = new IOFile(input_path);
-                HashMap<Integer, Integer> charCount = new HashMap<Integer, Integer>(iofile.bufferToMap());
+                HashMap<Integer, Integer> charCount = new HashMap<Integer, Integer>(iofile.fileToMap());
                 BSTree charTree = new BSTree(charCount);
                 this.heap = new PriorityQueue(charTree);
                 startCompress(compress, compressMap);
@@ -32,7 +32,6 @@ public class Compress {
         private void startCompress(String compress, String compressMap) {
                 mergeToTree();
                 treeToMap(this.heap.peek(), "");
-                printHashMap();
                 try {
                         this.iofile.writeToFile(this.map, compress, compressMap);
                 } catch (IOException e) {
@@ -90,7 +89,8 @@ public class Compress {
          */
         protected void printHashMap() {
                 this.map.entrySet().forEach(entry -> {
-                        System.out.println("[ " + entry.getKey() + " | " + entry.getValue() + "\t]");
+                        int temp = entry.getKey();
+                        System.out.println("[ " + (char) temp + " value: " + temp + " | " + entry.getValue() + "\t]");
                 });
         }
 }
