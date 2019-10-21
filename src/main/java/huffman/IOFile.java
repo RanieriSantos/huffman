@@ -78,7 +78,7 @@ public class IOFile {
                 OutputStream compressed =
                                 new BufferedOutputStream(new FileOutputStream(output_path));
                 BufferedWriter debug_compressed =
-                                new BufferedWriter(new FileWriter("destiny/debug.txt"));
+                                new BufferedWriter(new FileWriter("assets/output/debug.txt"));
 
                 writeSymbolTable(map_bin, compressMap);
 
