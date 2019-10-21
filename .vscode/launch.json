@@ -1,0 +1,12 @@
+{
+	"configurations": [
+		{
+			"type": "java",
+			"name": "CodeLens (Launch) - Main",
+			"request": "launch",
+			"mainClass": "huffman.Main",
+			"projectName": "huffman",
+			"args": "compress docs/dicionario.txt destiny/com.edz destiny/map.edt"
+		}
+	]
+}
