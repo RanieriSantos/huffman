@@ -10,15 +10,16 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.BitSet;
 import java.util.HashMap;
 
 /**
- * The {@code InputFile} class implements the necessary functions to read the
- * text from files and use it in the operations of compress/decompress.
+ * The {@code InputFile} class implements the necessary functions to read the text from files and
+ * use it in the operations of compress/decompress.
  * 
  * @author Ranieri Santos
  * @author imns1ght
@@ -53,12 +54,79 @@ public class IOFile {
          */
         public IOFile(String input_path, String map, String output) throws IOException {
                 try {
-                        InputStream temp = new FileInputStream(input_path);
                         this.keyMap = new HashMap<String, Integer>();
                         symbolTableToMap(map);
-                        recover(temp, output);
+                        recover(input_path, output);
 
                 } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                }
+        }
+
+        /**
+         * 
+         * @param map_bin
+         * @param output_path
+         * @param compressMap
+         * @throws IOException
+         */
+        protected void writeToFile(HashMap<Integer, String> map_bin, String output_path,
+                        String compressMap) throws IOException {
+                BitSet bits = new BitSet();
+                OutputStream compressed =
+                                new BufferedOutputStream(new FileOutputStream(output_path));
+                BufferedWriter debug_compressed =
+                                new BufferedWriter(new FileWriter("destiny/debug.txt"));
+
+                writeSymbolTable(map_bin, compressMap);
+
+                int num_bitsets = 0; // Number of bits
+                int charac;
+                // Write compressed file.
+                while ((charac = this.input.read()) != -1) {
+                        String curr_key = map_bin.get(charac);
+
+                        if (curr_key != null) {
+                                for (int i = 0; i < curr_key.length(); i++) {
+                                        bits.set(num_bitsets++, curr_key.charAt(i) - '0' > 0 ? true
+                                                        : false);
+                                }
+
+                                debug_compressed.append(curr_key);
+                        }
+                }
+
+                byte[] bytes = bits.toByteArray();
+                compressed.write(bytes);
+                compressed.close();
+                debug_compressed.close();
+        }
+
+        /**
+         * 
+         * @param map_bin
+         * @param compressMap
+         * @throws IOException
+         */
+        protected void writeSymbolTable(HashMap<Integer, String> map_bin, String compressMap) {
+                try {
+                        BufferedWriter symbol_table =
+                                        new BufferedWriter(new FileWriter(compressMap));
+                        // Write symbol table.
+                        for (HashMap.Entry<Integer, String> entry : map_bin.entrySet()) {
+                                if (entry.getKey() == 10 || entry.getKey() == (int) ('\n')) {
+                                        symbol_table.append("EOF" + entry.getValue() + '\n');
+                                } else if (entry.getKey() == 13) {
+                                        symbol_table.append("CR" + entry.getValue() + '\n');
+                                } else {
+                                        symbol_table.append(Character
+                                                        .toString((char) (int) entry.getKey())
+                                                        + entry.getValue() + '\n');
+                                }
+                        }
+
+                        symbol_table.close();
+                } catch (IOException e) {
                         e.printStackTrace();
                 }
         }
@@ -69,74 +137,13 @@ public class IOFile {
          * @param output
          * @throws IOException
          */
-        protected void recover(InputStream temp, String output) throws IOException {
-                OutputStream decompressed = new BufferedOutputStream(new FileOutputStream(output));
-                byte[] buffer = temp.readAllBytes();
-                String letter = "";
-                try {
-                        for (byte b : buffer) {
-                                letter += (byte) b;
-                                if (this.keyMap.containsKey(letter)) {
-                                        decompressed.write((int) (this.keyMap.get(letter)));
-                                        letter = "";
-                                }
-                        }
-                        letter = "";
-                        temp.close();
-                        decompressed.close();
-                } catch (IOException e) {
-                        e.printStackTrace();
-                        System.exit(1);
+        protected void recover(String input_path, String output_path) throws IOException {
+                byte[] bytes = Files.readAllBytes(Paths.get(input_path));
+                BitSet bits = BitSet.valueOf(bytes);
+
+                for (int i = 0; i < bits.length(); i++) {
+                        System.out.println(bits.get(i) == true ? 1 : 0);
                 }
-        }
-
-        /**
-         * 
-         * @param map_bin
-         * @param compress
-         * @param compressMap
-         * @throws IOException
-         */
-        protected void writeToFile(HashMap<Integer, String> map_bin, String compress, String compressMap)
-                        throws IOException {
-                int charac;
-                BitSet bin_buffer = new BitSet();
-                BufferedWriter symbol_table = new BufferedWriter(new FileWriter(compressMap));
-                OutputStream compressed = new BufferedOutputStream(new FileOutputStream(compress));
-
-                // Write symbol table.
-                for (HashMap.Entry<Integer, String> entry : map_bin.entrySet()) {
-                        if (entry.getKey() == 10 || entry.getKey() == (int) ('\n')) {
-                                symbol_table.append("EOF" + entry.getValue() + '\n');
-                        } else if (entry.getKey() == 13) {
-                                symbol_table.append("CR" + entry.getValue() + '\n');
-                        } else {
-                                symbol_table.append(Character.toString((char) (int) entry.getKey()) + entry.getValue()
-                                                + '\n');
-                        }
-                }
-
-                int num_bitsets = 0; // Number of bits
-                // Write compressed file.
-                while ((charac = this.input.read()) != -1) {
-                        String curr_key = map_bin.get(charac);
-                        if (curr_key != null) {
-                                for (int i = 0; i < curr_key.length(); i++) {
-                                        bin_buffer.set(num_bitsets, curr_key.charAt(i) - '0' > 0 ? true : false);
-                                        num_bitsets++;
-                                }
-                        }
-                }
-
-                byte[] bits = new byte[num_bitsets];
-
-                for (int i = 0; i < num_bitsets; i++) {
-                        bits[i] = (byte) (bin_buffer.get(i) ? 1 : 0);
-                }
-
-                symbol_table.close();
-                compressed.write(bits);
-                compressed.close();
         }
 
         /**
@@ -192,7 +199,8 @@ public class IOFile {
          */
         protected void printHashMap() {
                 this.map_char.entrySet().forEach(entry -> {
-                        System.out.println("[ " + entry.getKey() + " | " + entry.getValue() + "\t]");
+                        System.out.println(
+                                        "[ " + entry.getKey() + " | " + entry.getValue() + "\t]");
                 });
         }
 }
