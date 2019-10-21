@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.BitSet;
@@ -25,21 +26,22 @@ import java.util.HashMap;
  * @author imns1ght
  */
 public class IOFile {
-        private HashMap<Integer, Integer> map_char; // Chars readed from file.
-        private HashMap<String, Integer> keyMap;
-        private FileInputStream in;// Aux to reset buffer to the beginning.
-        private BufferedReader input;// Input file.
+        private HashMap<String, Integer> symbolTable;
+        private HashMap<Integer, Integer> charsFromFile; // Chars readed from file.
+        private FileInputStream in; // Aux to reset buffer to the beginning.
+        private BufferedReader bufferedChars; // Input file.
 
         /**
          * Compress constructor
          * 
-         * @param input_path path of input file.
+         * @param input_path path of bufferedChars file.
+         * @throws UnsupportedEncodingException
          */
-        public IOFile(String input_path) {
+        public IOFile(String input_path) throws UnsupportedEncodingException {
                 try {
                         this.in = new FileInputStream(new File(input_path));
-                        this.input = new BufferedReader(new InputStreamReader(this.in));
-                        this.map_char = new HashMap<Integer, Integer>();
+                        this.bufferedChars = new BufferedReader(new InputStreamReader(this.in));
+                        this.charsFromFile = new HashMap<Integer, Integer>();
                         fileToMap();
                 } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -49,14 +51,13 @@ public class IOFile {
         /**
          * Decompress constructor
          * 
-         * @param input_path path of input file.
+         * @param input_path path of bufferedChars file.
          * @param map        path of char map.
          */
-        public IOFile(String input_path, String map, String output) throws IOException {
+        public IOFile(String input_path, String table_path, String output_path) throws IOException {
                 try {
-                        this.keyMap = new HashMap<String, Integer>();
-                        symbolTableToMap(map);
-                        recover(input_path, output);
+                        this.symbolTable = new HashMap<String, Integer>();
+                        edtToTable(table_path);
 
                 } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -73,6 +74,7 @@ public class IOFile {
         protected void writeToFile(HashMap<Integer, String> map_bin, String output_path,
                         String compressMap) throws IOException {
                 BitSet bits = new BitSet();
+                
                 OutputStream compressed =
                                 new BufferedOutputStream(new FileOutputStream(output_path));
                 BufferedWriter debug_compressed =
@@ -82,9 +84,10 @@ public class IOFile {
 
                 int num_bitsets = 0; // Number of bits
                 int charac;
+                String curr_key = "";
                 // Write compressed file.
-                while ((charac = this.input.read()) != -1) {
-                        String curr_key = map_bin.get(charac);
+                while ((charac = this.bufferedChars.read()) != -1) {
+                        curr_key = map_bin.get(charac);
 
                         if (curr_key != null) {
                                 for (int i = 0; i < curr_key.length(); i++) {
@@ -94,6 +97,17 @@ public class IOFile {
 
                                 debug_compressed.append(curr_key);
                         }
+                }
+
+                curr_key = map_bin.get(-1); // Add EOF
+
+                if (curr_key != null) {
+                        for (int i = 0; i < curr_key.length(); i++) {
+                                bits.set(num_bitsets++,
+                                                curr_key.charAt(i) - '0' > 0 ? true : false);
+                        }
+
+                        debug_compressed.append(curr_key);
                 }
 
                 byte[] bytes = bits.toByteArray();
@@ -114,8 +128,10 @@ public class IOFile {
                                         new BufferedWriter(new FileWriter(compressMap));
                         // Write symbol table.
                         for (HashMap.Entry<Integer, String> entry : map_bin.entrySet()) {
-                                if (entry.getKey() == 10 || entry.getKey() == (int) ('\n')) {
+                                if (entry.getKey() == -1) {
                                         symbol_table.append("EOF" + entry.getValue() + '\n');
+                                } else if (entry.getKey() == 10) {
+                                        symbol_table.append("EOL" + entry.getValue() + '\n');
                                 } else if (entry.getKey() == 13) {
                                         symbol_table.append("CR" + entry.getValue() + '\n');
                                 } else {
@@ -137,13 +153,29 @@ public class IOFile {
          * @param output
          * @throws IOException
          */
-        protected void recover(String input_path, String output_path) throws IOException {
-                byte[] bytes = Files.readAllBytes(Paths.get(input_path));
-                BitSet bits = BitSet.valueOf(bytes);
+        protected void extract(String input_path,
+                        String output_path) throws IOException {
+                BitSet bits = BitSet.valueOf(Files.readAllBytes(Paths.get(input_path)));
+                BufferedWriter decompressed = new BufferedWriter(new FileWriter(output_path));
 
-                for (int i = 0; i < bits.length(); i++) {
-                        System.out.println(bits.get(i) == true ? 1 : 0);
+                int i = 0;
+                String word = "";
+
+                while (!bits.isEmpty()) {
+                        word += bits.get(i) == true ? Integer.toString(1) : Integer.toString(0);
+                        Integer curr_key = this.symbolTable.get(word);
+
+                        if (curr_key != null && curr_key.intValue() == -1) {
+                                break;
+                        } else if (curr_key != null) {
+                                decompressed.write((char) curr_key.intValue());
+                                word = "";
+                        }
+
+                        i++;
                 }
+
+                decompressed.close();
         }
 
         /**
@@ -154,41 +186,48 @@ public class IOFile {
         protected HashMap<Integer, Integer> fileToMap() {
                 int charac;
                 try {
-                        while ((charac = this.input.read()) != -1) {
-                                if (this.map_char.containsKey(charac)) {
-                                        this.map_char.put(charac, this.map_char.get(charac) + 1);
+                        while ((charac = this.bufferedChars.read()) != -1) {
+                                if (this.charsFromFile.containsKey(charac)) {
+                                        this.charsFromFile.put(charac, this.charsFromFile.get(charac) + 1);
                                 } else {
-                                        this.map_char.put(charac, 1);
+                                        this.charsFromFile.put(charac, 1);
                                 }
                         }
+
+                        this.charsFromFile.put(-1, 1);
                         this.in.getChannel().position(0);
-                        this.input = new BufferedReader(new InputStreamReader(this.in));
+                        this.bufferedChars = new BufferedReader(new InputStreamReader(this.in));
                 } catch (IOException e) {
                         e.printStackTrace();
                 }
-                return this.map_char;
+
+                return this.charsFromFile;
         }
 
         /**
          * 
          * @param symbolTablePath Path to the file map of compressed file.
          * @return A HashMap of symbols.
-         * @throws FileNotFoundException If input file not found.
+         * @throws FileNotFoundException If bufferedChars file not found.
          */
-        protected void symbolTableToMap(String symbolTablePath) throws FileNotFoundException {
-                BufferedReader input = new BufferedReader(new FileReader(symbolTablePath));
+        protected void edtToTable(String table_path)
+                        throws FileNotFoundException {
+                BufferedReader bufferedChars = new BufferedReader(new FileReader(table_path));
                 String line;
+
                 try {
-                        while ((line = input.readLine()) != null) {
-                                if (line.contains("EOF")) { // End of line
-                                        this.keyMap.put(line.substring(3), 10);
+                        while ((line = bufferedChars.readLine()) != null) {
+                                if (line.contains("EOF")) {// End of file
+                                        this.symbolTable.put(line.substring(3), -1);
+                                } else if (line.contains("EOL")) { // End of line
+                                        this.symbolTable.put(line.substring(3), 10);
                                 } else if (line.contains("CR")) { // Carriage return
-                                        this.keyMap.put(line.substring(2), 13);
+                                        this.symbolTable.put(line.substring(2), 13);
                                 } else {
-                                        this.keyMap.put(line.substring(1), (int) line.charAt(0));
+                                        this.symbolTable.put(line.substring(1), (int) line.charAt(0));
                                 }
                         }
-                        input.close();
+                        bufferedChars.close();
                 } catch (IOException e) {
                         e.printStackTrace();
                 }
@@ -198,7 +237,7 @@ public class IOFile {
          * Print the hash map.
          */
         protected void printHashMap() {
-                this.map_char.entrySet().forEach(entry -> {
+                this.charsFromFile.entrySet().forEach(entry -> {
                         System.out.println(
                                         "[ " + entry.getKey() + " | " + entry.getValue() + "\t]");
                 });

@@ -19,11 +19,13 @@ public class Menu {
                                 if (option.equals("compress")) {
                                         System.out.println("Compressing " + this.args[1] + "\n");
                                         Compress compress = new Compress(this.args[1], this.args[2], this.args[3]);
+                                        compress.startCompress();
                                         break;
                                 } else if (option.equals("extract")) {
                                         System.out.println("Decompressing " + this.args[1] + "\n");
                                         Decompress decompress = new Decompress(this.args[1], this.args[2],
                                                         this.args[3]);
+                                        decompress.startDecompress();
                                         break;
                                 } else {
                                         printHelp();

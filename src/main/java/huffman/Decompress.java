@@ -3,14 +3,31 @@ package huffman;
 import java.io.IOException;
 
 /**
- * The {@code Decompress} class implements functions to decompress text files
- * compressed usingthe Huffman's coding algorithm.
+ * The {@code Decompress} class implements functions to decompress text files compressed usingthe
+ * Huffman's coding algorithm.
  * 
  * @author Ranieri Santos
  * @author imns1ght
  */
 public class Decompress {
-        public Decompress(String input_path, String map_path, String output) throws IOException {
-                IOFile iofile = new IOFile(input_path, map_path, output);
+        private IOFile iofile;
+        private String input_path;
+        private String table_path;
+        private String output_path;
+
+        public Decompress(String input_path, String table_path, String output_path)
+                        throws IOException {
+                this.input_path = input_path;
+                this.table_path = table_path;
+                this.output_path = output_path;
+                iofile = new IOFile(this.input_path, this.table_path, this.output_path);
+        }
+
+        protected void startDecompress() {
+                try {
+                        iofile.extract(this.input_path, this.output_path);
+                } catch (IOException e) {
+                        e.printStackTrace();
+                }
         }
 }
