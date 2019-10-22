@@ -2,9 +2,16 @@ package huffman;
 
 import java.io.IOException;
 
+/**
+ * The {@code class Menu} created to keep {@code class Main} clean and recive
+ * arguments over command line.
+ */
 public class Menu {
-        protected String[] args;
+        private String[] args;
 
+        /**
+         * Default constructor.
+         */
         public Menu(String[] args) {
                 if (args.length == 0) {
                         printHelp();
@@ -13,6 +20,11 @@ public class Menu {
                 }
         }
 
+        /**
+         * Menu itself.
+         * 
+         * @throws IOException
+         */
         protected void menu() throws IOException {
                 if (this.args != null) {
                         for (String option : this.args) {
@@ -35,7 +47,10 @@ public class Menu {
                 }
         }
 
-        protected void printHelp() {
+        /**
+         * Print help menu.
+         */
+        private void printHelp() {
                 System.out.println("Invalid argument.");
                 System.out.println("Use: java -jar huffman.jar compress file.txt file.edz file.edt");
                 System.out.println("Use: java -jar huffman.jar extract file.edz file.edt file.txt");

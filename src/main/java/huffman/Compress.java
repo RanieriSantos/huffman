@@ -5,8 +5,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
 /**
- * The {@code Compress} class implements functions to compress text files using the Huffman's coding
- * algorithm.
+ * The {@code Compress} class implements functions to compress text files using
+ * the Huffman's coding algorithm.
  * 
  * @author Ranieri Santos
  * @author imns1ght
@@ -33,12 +33,14 @@ public class Compress {
 
                 this.symbolTable = new HashMap<Integer, String>();
                 this.iofile = new IOFile(this.input_path);
-                HashMap<Integer, Integer> charCount =
-                                new HashMap<Integer, Integer>(iofile.fileToMap());
+                HashMap<Integer, Integer> charCount = new HashMap<Integer, Integer>(iofile.fileToMap());
                 BSTree charTree = new BSTree(charCount);
                 this.heap = new PriorityQueue(charTree);
         }
 
+        /**
+         * Starts the compression process.
+         */
         protected void startCompress() {
                 mergeHeapToTree();
                 treeToSymbolTable(this.heap.peek(), "");
@@ -50,6 +52,9 @@ public class Compress {
                 }
         }
 
+        /**
+         * Creates father node while heap size > 1.
+         */
         private void mergeHeapToTree() {
                 while (this.heap.getSize() > 1) {
                         Node a = this.heap.poll();
@@ -59,6 +64,13 @@ public class Compress {
                 }
         }
 
+        /**
+         * Creates, recursively, unique "binary" code for each leaf of the tree.
+         * 
+         * @param node Current node.
+         * @param bin  Concatenated "binary" code of iteractions.
+         * @return "Binary" code of leaf.
+         */
         private String treeToSymbolTable(Node node, String bin) {
                 if (node != null) {
                         if (node.getLeft() == null) {
@@ -94,8 +106,7 @@ public class Compress {
         protected void print() {
                 this.symbolTable.entrySet().forEach(entry -> {
                         int temp = entry.getKey();
-                        System.out.println("[ " + (char) temp + " value: " + temp + " | "
-                                        + entry.getValue() + "\t]");
+                        System.out.println("[ " + (char) temp + " | " + entry.getValue() + "\t]");
                 });
         }
 }
